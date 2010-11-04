@@ -4,13 +4,12 @@ module MongoMapper
     module Associations
       class BelongsToProxy < Proxy
         def replace(doc)
-          if doc
-            doc.save if doc.new?
-            id = doc.id
-          end
+          proxy_owner[association.foreign_key] = doc ? doc.id : nil
+          @target = doc
+        end
 
-          proxy_owner[association.foreign_key] = id
-          reload
+        def save_to_collection(options={})
+          @target.save if @target
         end
 
         protected
